@@ -1,17 +1,11 @@
-п»ї<?
-
-/* Р­С‚Рѕ СЃР°РјС‹Р№ РіР»Р°РІРЅС‹Р№ РєР»Р°СЃСЃ. Рє РЅРµРјСѓ РѕР±СЂР°С‰Р°СЋС‚СЃСЏ РІСЃРµ РѕСЃС‚Р°Р»СЊРЅС‹Рµ. 
- * Р‘РµСЂРµРј С„Р°Р№Р» YML Рё РєРёРґР°РµРј РµРіРѕ РІ РєР°С‚Р°Р»РѕРі
- */
-
-IncludeModuleLangFile($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/bedrosova.ymlimport/import_setup_templ.php');
+<?IncludeModuleLangFile($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/bedrosova.ymlimport/import_setup_templ.php');
 
 global $USER;
 global $APPLICATION;
 
-//РїРµСЂРµРєРѕРґРёСЂСѓРµРј РІ С‚Сѓ РєРѕРґРёСЂРѕРІРєСѓ, РІ РєРѕС‚РѕСЂСѓСЋ РЅР°РґРѕ, РµСЃР»Рё РЅР°РґРѕ
-//РџРѕС‡РµРјСѓ РЅРµ РѕС‚С‚Р°Р»РєРёРІР°РµРјСЃСЏ РѕС‚ РєРѕРґРёСЂРѕРІРєРё СЃР°Р№С‚Р°?
-//РўР°Рє Р±С‹Р»Рѕ СЂР°РЅСЊС€Рµ, РЅРѕ РїРѕ РїСЂРѕСЃСЊР±Р°Рј РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ С‚РµРїРµСЂСЊ РјС‹ РІС‹РЅРµСЃР»Рё РїРµСЂРµРєРѕРґРёСЂРѕРІРєСѓ РІ РЅР°СЃС‚СЂРѕР№РєРё
+//перекодируем в ту кодировку, в которую надо, если надо
+//Почему не отталкиваемся от кодировки сайта?
+//Так было раньше, но по просьбам пользователей теперь мы вынесли перекодировку в настройки
 function yml_iconv($str,$oe="N")
 	{
 		switch ($oe) {
@@ -58,25 +52,25 @@ class CYmlImport
     }
 
 
-    // РїРѕР»СѓС‡Р°РµРј xml-РѕР±СЉРµРєС‚
-    // СЃРјС‹СЃР» РІ С‚РѕРј, С‡С‚Рѕ РЅРµР»СЊР·СЏ РѕРїСЂРµРґРµР»РёС‚СЊ РєРѕРґРёСЂРѕРІРєСѓ С„Р°Р№Р»Р°. РІСЃРµРіРґР° РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ utf-8
-    // РїРѕСЌС‚РѕРјСѓ РѕС‚РєСЂС‹РІР°РµРј С„Р°Р№Р» РєР°Рє РµСЃС‚СЊ, РµСЃР»Рё РѕРЅ РѕР±СЉРµРєС‚ СЃРѕР·РґР°РµС‚СЃСЏ - С…РѕСЂРѕС€Рѕ
-    // РµСЃР»Рё РЅРµ СЃРѕР·РґР°РµС‚СЃСЏ - РїРµСЂРµРєРѕРґРёСЂСѓРµРј Рё РѕРїСЏС‚СЊ СЃРѕР·РґР°РµРј.
-    // РЅСѓ СѓР¶ РµСЃР»Рё Рё С‚СѓС‚ РЅРµ СЃРѕР·РґР°Р»СЃСЏ, СЏ СѓР¶Рµ РЅРµ Р·РЅР°СЋ С‡С‚Рѕ РґРµР»Р°С‚СЊ
+    // получаем xml-объект
+    // смысл в том, что нельзя определить кодировку файла. всегда определяется utf-8
+    // поэтому открываем файл как есть, если он объект создается - хорошо
+    // если не создается - перекодируем и опять создаем.
+    // ну уж если и тут не создался, я уже не знаю что делать
     function GetXMLObject($FilePath)
     {
-        // СЃРѕРґРµСЂР¶РёРјРѕРµ
+        // содержимое
         $file_content = file_get_contents ($FilePath);
 
-        // РїС‹С‚Р°РµРјСЃСЏ РїРѕР»СѓС‡РёС‚СЊ РѕР±СЉРµРєС‚
+        // пытаемся получить объект
         $xml =  simplexml_load_string($file_content);
         if (!is_object($xml->shop))
         {
-            //РЅРµ РјРѕРіСѓ СЃРѕР·РґР°С‚СЊ РѕР±СЉРµРєС‚
+            //не могу создать объект
             $file_content = iconv("windows-1251", "utf-8", $file_content);
 
-            // РєРѕРґРёСЂРѕРІРєР° РїСЂРѕРёР·РІРµРґРµРЅР°
-            // РµС‰Рµ СЂР°Р·РёРє
+            // кодировка произведена
+            // еще разик
             $xml =  simplexml_load_string($file_content);
         }
 
@@ -84,7 +78,7 @@ class CYmlImport
     }
 
 
-    // Р° СЌС‚Рѕ Р¶РёСЂРЅР°СЏ С„СѓРЅРєС†РёСЏ РєР°Рє СЂР°Р· РІСЃРµ РґРµР»Р°РµС‚
+    // а это жирная функция как раз все делает
     function ImportYML ($DATA_FILE_NAME, $IBLOCK_ID, $IMPORT_CATEGORY, $ONLY_PRICE, $max_execution_time, $CUR_FILE_POS,$IMPORT_CATEGORY_SECTION, $URL_DATA_FILE2, $ID_SECTION, $CAT_FILTER_I, $price_modifier,$OPTION_ENCODING)
     {
 
@@ -149,7 +143,7 @@ class CYmlImport
             if (CCatalog::GetByID($IBLOCK_ID))
                 $bIBlockIsCatalog = true;
 
-            //Р—РґРµСЃСЊ РЅР°С‡РёРЅР°РµРј Р·Р°РіСЂСѓР·РєСѓ xml С„Р°Р№Р»Р°
+            //Здесь начинаем загрузку xml файла
 
             $xml;
 
@@ -185,12 +179,36 @@ class CYmlImport
         {
 		
 			set_time_limit(0);
+			
+			//Проверим существует ли свойство CML2_ATTRIBUTES и если не сущестует, создадим его
+			
+			$properties = CIBlockProperty::GetList(Array("sort"=>"asc", "name"=>"asc"), Array("ACTIVE"=>"Y", "IBLOCK_ID"=>$IBLOCK_ID, "CODE"=>"CML2_ATTRIBUTES"));
+			if(!$properties->GetNext())
+			{
+				$arNewPropFields = Array(
+						"NAME" => GetMessage("CML2_ATTRIBUTES"),
+						"ACTIVE" => "Y",
+						"SORT" => "10000",
+						"CODE" =>"CML2_ATTRIBUTES",
+						"PROPERTY_TYPE" => "S",
+						"MULTIPLE"=>'Y',
+						"WITH_DESCRIPTION"=>'Y',
+						"IBLOCK_ID" => $IBLOCK_ID,
+						'SMART_FILTER' => 'Y', 
+				);
+								  
+				$Newibp = new CIBlockProperty;
+								
+				$NewPropID = $Newibp->Add($arNewPropFields);
+			}
+		
+			
 		
             $arPriceType = Array();
 
-            //РРјРїРѕСЂС‚РёСЂСѓСЋ РєР°С‚РµРіРѕСЂРёРё РёР· yml С„Р°Р№Р»Р°
+            //Импортирую категории из yml файла
 
-            $ResCatArr=array();//РЎСЋРґР° Р±СѓРґСѓ СЃРєР»Р°РґС‹РІР°С‚СЊ РЅР°Р№РґРµРЅРЅС‹Рµ РёР»Рё РґРѕР±Р°РІР»РµРЅРЅС‹Рµ Р°Р№РґРёС€РЅРёРєРё РґР»СЏ РєР°Р¶РґРѕР№ РєР°С‚РµРіРѕСЂРёРё
+            $ResCatArr=array();//Сюда буду складывать найденные или добавленные айдишники для каждой категории
 
             $CategiriesList=$xml->shop->categories->category;
 
@@ -205,7 +223,7 @@ class CYmlImport
 						$CATEGORIA_PARENT_XML_ID = $Categoria['parentId'] ? 'yml_'.$Categoria['parentId'] : $ID_SECTION;
 				
 					}else{
-						$CATEGORIA_PARENT_XML_ID = $Categoria['parentId'] ? 'yml_'.$Categoria['parentId'] : 0;//Р•СЃР»Рё СЂРѕРґРёС‚РµР»СЊ РЅРµ СѓРєР°Р·Р°РЅ - РїСѓСЃС‚СЊ РєР°С‚РіРѕСЂРёСЏ РёРґРµС‚ РІ РєРѕСЂРµРЅСЊ
+						$CATEGORIA_PARENT_XML_ID = $Categoria['parentId'] ? 'yml_'.$Categoria['parentId'] : 0;//Если родитель не указан - пусть катгория идет в корень
 					}
 				
 				
@@ -213,7 +231,7 @@ class CYmlImport
                 $CATEGORIA_NAME=yml_iconv($Categoria,$OPTION_ENCODING);
 
 
-                //РС‰РµРј, СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё С‚Р°РєР°СЏ РєР°С‚РµРіРѕСЂРёСЏ РЅР° СЃР°Р№С‚Рµ
+                //Ищем, существует ли такая категория на сайте
 
                 $find_section_res=CIBlockSection::GetList(array(), Array("IBLOCK_ID"=>$IBLOCK_ID, "XML_ID"=>$CATEGORIA_XML_ID),false, array("ID"),false);
                 if($find_section_res2=$find_section_res->GetNext()){
@@ -246,7 +264,7 @@ class CYmlImport
                 }
                 else
                 {
-                    //Р”РѕР±Р°РІР»СЏСЋ
+                    //Добавляю
 					
 					if ($ResCatArr[''.$CATEGORIA_PARENT_XML_ID.'']==0 && $IMPORT_CATEGORY_SECTION=='Y'){
 				
@@ -329,7 +347,7 @@ class CYmlImport
                 for ($j = $CUR_FILE_POS; $j < count($xml->shop->offers->offer); $j++)
                 {
 
-                    // СѓСЃС‚Р°РЅРІР°Р»РёРІР°РµРј Р·РЅР°С‡РЅРёРµ РґРѕ РєРѕС‚РѕСЂРѕРіРѕ РґРѕР±СЂР°Р»РёСЃСЊ
+                    // устанваливаем значние до которого добрались
                     $CUR_FILE_POS=$j;
 
                     $xProductNode = $xml->shop->offers->offer[$j];
@@ -338,7 +356,7 @@ class CYmlImport
 
                     $PRODUCT_TYPE = $xProductNode['type'];
 
-                    // РІС‹С†РµРїР»СЏРµРј С‚РёРї С‚РѕРІР°СЂР° Рё РїРѕР»СѓС‡Р°РµРј РµРіРѕ РЅР°Р·РІР°РЅРёРµ
+                    // выцепляем тип товара и получаем его название
                     switch ($PRODUCT_TYPE)
                     {
                         case "vendor.model":
@@ -414,7 +432,7 @@ class CYmlImport
 						
 						$count_pik=0;
 						foreach ($xProductNode->picture as $dop_pic){
-							$count_pik++;//РџРµСЂРІСѓСЋ РєР°СЂС‚РёРЅРєСѓ РЅРµ С„РёРіР°С‡РёРј РІ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РєР°СЂС‚РёРЅРєРё - РѕРЅР° СѓР¶Рµ РІ РґРµС‚Р°Р»СЊРЅСѓСЋ СѓС€Р»Р°
+							$count_pik++;//Первую картинку не фигачим в дополнительные картинки - она уже в детальную ушла
 							if ($count_pik>1){
 								$dop_pic_arr=CFile::MakeFileArray($dop_pic);
 								$dop_pic_arr["MODULE_ID"] = "iblock";
@@ -440,7 +458,7 @@ class CYmlImport
                     
                         "DETAIL_TEXT"=>$description,
                         "DETAIL_TEXT_TYPE"=>'html',
-                        // РїРѕР»СѓС‡Р°РµРј РєРѕРґ С‚РѕРІР°СЂР°
+                        // получаем код товара
                       // "CODE" => CUtil::translit(($vendor?$vendor:$PRODUCT_NAME)." ".$articul, 'ru', array()),
 						 "CODE" => $articul,
                     );
@@ -463,27 +481,27 @@ class CYmlImport
                     $res = CIBlockElement::GetList(Array(), Array("IBLOCK_ID"=>$IBLOCK_ID, "XML_ID"=>$PRODUCT_XML_ID));
                     $bNewRecord_tmp = False;
 
-                    // С„Р»Р°Р¶РѕРє С‡С‚Рѕ РІСЃРµ РЅРёС€С‚СЏРє
+                    // флажок что все ништяк
                     $flag_ok = 0;
 
                     $PRODUCT_ID=false;
-					// С‚РѕРІР°СЂ СѓР¶Рµ РµСЃС‚СЊ?
+					// товар уже есть?
                     if ($arr = $res->Fetch())
                     {
                         $PRODUCT_ID = $arr["ID"];
 
                         if ($ONLY_PRICE!='Y')
                         {
-                            // РѕР±РЅРѕРІР»СЏРµРј
+                            // обновляем
                             $flag_ok = $el->Update($PRODUCT_ID, $arLoadProductArray2);
                             //fwrite($fp, "already was. updated ".$PRODUCT_XML_ID." ".$PRODUCT_NAME."\n");
 
-                            // СѓР¶Рµ РµСЃС‚СЊ С‚Р°РєРѕР№ РєРѕРґ
+                            // уже есть такой код
                             if (!$flag_ok)
                             {
-                                // РґР° Р¶Р°Р»РєРѕ С‡С‚Рѕ Р»Рё. РїРѕРјРµРЅСЏРµРј
+                                // да жалко что ли. поменяем
                                 $arLoadProductArray["CODE"] = $arLoadProductArray["XML_ID"];
-                                // РµС‰Рµ СЂР°Р· РѕР±РЅРѕРІР»СЏР№
+                                // еще раз обновляй
                                 $flag_ok = $el->Update($PRODUCT_ID, $arLoadProductArray);
                               //fwrite($fp, "code changed to xmlid ".$PRODUCT_XML_ID." ".$PRODUCT_NAME."\n");
                             }
@@ -510,23 +528,23 @@ class CYmlImport
 						
 						}
                     }
-                    // С‚Р°РєРѕРіРѕ С‚РѕРІР°СЂР° РµС‰Рµ РЅРµ Р±С‹Р»Рѕ
+                    // такого товара еще не было
                     else
                     {
                         if ($ONLY_PRICE!='Y')
                         {
-                            // РґРѕР±Р°РІР»СЏРµРј
+                            // добавляем
 							$flag_ok=false;
                             $PRODUCT_ID  = $el->Add($arLoadProductArray);
 							if ($PRODUCT_ID) $flag_ok=true;
                             //fwrite($fp, "new record ".$PRODUCT_XML_ID." ".$PRODUCT_NAME."\n");
 
-                            // РЅРµ РґРѕР±Р°РІРёР»СЃСЏ! С‚Р°РєРѕР№ РєРѕРґ СѓР¶Рµ РµСЃС‚СЊ
+                            // не добавился! такой код уже есть
                             if (!$flag_ok)
                             {
-                                // РїРѕРјРµРЅСЏР»Рё
+                                // поменяли
                                 $arLoadProductArray["CODE"] = $arLoadProductArray["XML_ID"];
-                                // РµС‰Рµ СЂР°Р· РґРѕР±Р°РІР»СЏР№
+                                // еще раз добавляй
                                 $PRODUCT_ID = $el->Add($arLoadProductArray);
 								if ($PRODUCT_ID) $flag_ok=true;
                               //  fwrite($fp, "code changed to xmlid ".$PRODUCT_XML_ID." ".$PRODUCT_NAME."\n");
@@ -579,18 +597,18 @@ class CYmlImport
 						CCatalogStoreProduct::Add($arFieldsSklad);
 
 
-                        //РћР±РЅРѕРІР»СЏРµРј Р±Р°Р·РѕРІСѓСЋ С†РµРЅСѓ РґР»СЏ С‚РѕРІР°СЂР°
+                        //Обновляем базовую цену для товара
                         $price_ok=CPrice::SetBasePrice($PRODUCT_ID,$ProductPrice,"RUB");
 
                     
 //***********************************************************************************************************************************************************					   
-//                                                                  РЎРѕС…СЂР°РЅРµРЅРёРµ СЃРІРѕР№СЃС‚РІ С‚РѕРІР°СЂР°					   
+//                                                                  Сохранение свойств товара					   
 //***********************************************************************************************************************************************************					   
 
                         if ($ONLY_PRICE!='Y')
                         {
 
-							//РџРѕСЃР»Рµ С‚РѕРіРѕ, РєР°Рє РѕСЃРЅРѕРІРЅР°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ РїРѕ С‚РѕРІР°СЂСѓ Р·Р°РїРёСЃР°РЅР°, СЃРѕС…СЂР°РЅСЏРµРј СЃРІРѕР№СЃС‚РІР°
+							//После того, как основная информация по товару записана, сохраняем свойства
                             $PROPERTY_VALUE=array();
                             $count=0;
                             if (isset ($xOfferListNode))
@@ -621,8 +639,8 @@ class CYmlImport
 							
 							}
 
-                            $ELEMENT_ID = $PRODUCT_ID;  // РєРѕРґ СЌР»РµРјРµРЅС‚Р°
-                            $PROPERTY_CODE = "CML2_ATTRIBUTES";  // РєРѕРґ СЃРІРѕР№СЃС‚РІР°
+                            $ELEMENT_ID = $PRODUCT_ID;  // код элемента
+                            $PROPERTY_CODE = "CML2_ATTRIBUTES";  // код свойства
            
                             CIBlockElement::SetPropertyValuesEx($ELEMENT_ID, $IBLOCK_ID, array($PROPERTY_CODE=>$PROPERTY_VALUE));
 
@@ -640,7 +658,7 @@ class CYmlImport
 
                    // fclose($fp);
 
-                    // РµСЃР»Рё С‚Р°Р№РјРµСЂ Р·Р°РєРѕРЅС‡РёР»СЃСЏ, $bAllLinesLoaded = false
+                    // если таймер закончился, $bAllLinesLoaded = false
                     if (!($bAllLinesLoaded = $this->CSVCheckTimeout($max_execution_time))){
 
 							
@@ -656,13 +674,13 @@ class CYmlImport
 		
 		
 
-        // РЅРµ СѓСЃРїРµР»Рё Р·Р°РєРѕРЅС‡РёС‚СЊ РґРѕ С‚Р°Р№РјРµСЂР°
+        // не успели закончить до таймера
         if (!$bAllLinesLoaded)
         {
-            // СѓРІРµР»РёС‡РёРІР°РµРј РїРѕР·РёС†РёСЋ
+            // увеличиваем позицию
             $CUR_FILE_POS++;
             $this->FILE_POS = $CUR_FILE_POS;
-            // С„Р»Р°Р¶РѕРє С‡С‚Рѕ РЅР°РґРѕ РїРµСЂРµР·Р°РіСЂСѓР·РёС‚СЊСЃСЏ
+            // флажок что надо перезагрузиться
             $this->AllLinesLoaded = false;
 
         }

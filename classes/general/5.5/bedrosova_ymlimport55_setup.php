@@ -1,10 +1,6 @@
-<title>IMPORT_YML_5_5</title>
-
-<?
-IncludeModuleLangFile($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/bedrosova.ymlimport/import_setup_templ.php');
-
+<title>IMPORT_YML_5_5</title><?
+//IncludeModuleLangFile($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/bedrosova.ymlimport/import_setup_templ.php');
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/bedrosova.ymlimport/classes/general/5.5/ymlimport55.php");
-
 $arSetupErrors = array();
 
 
@@ -122,10 +118,6 @@ if ($STEP >1)
 if (!empty($arSetupErrors))
 	echo ShowError(implode('<br />', $arSetupErrors));
 ?>
-
-
-
-<? // начинается форма ?>
 <form method="POST" action="<? echo $APPLICATION->GetCurPage(); ?>" ENCTYPE="multipart/form-data" name="dataload">
 <?
 $aTabs = array(
