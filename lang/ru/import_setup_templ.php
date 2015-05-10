@@ -83,6 +83,14 @@ $MESS ['PARAMETERS_FROM_IB_LIST'] = "Список";
 $MESS ['PARAMETERS_CREATE_NEW'] = "Создать новое свойство";
 $MESS ['IBLOCK_ADM_IMP_FIELDS_SOOT'] = "Укажите соответсвие между параметрами в yml-файле и свойствами инфоблока, укажите тип свойства для нового свойства";
 
+$MESS ['OPTIONS'] = "Опции";
 $MESS ['OPTION_ENCODING'] = "Перекодировать данные";
+$MESS ['NO'] = "Нет";
+$MESS ['PROPERTY_MAP'] = "Карта свойств";
+
+$MESS ['ADD_PROPERTY_MAP'] = "Добавить";
+
+$MESS ['IN_FILE'] = "В файле";
+$MESS ['IN_IBLOCK'] = "В инфоблоке";
 
 ?>

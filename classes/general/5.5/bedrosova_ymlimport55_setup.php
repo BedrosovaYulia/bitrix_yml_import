@@ -1,4 +1,5 @@
 <title>IMPORT_YML_5_5</title>
+
 <?
 IncludeModuleLangFile($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/bedrosova.ymlimport/import_setup_templ.php');
 
@@ -53,8 +54,19 @@ if ($STEP <= 1)
 if (isset($arOldSetupVars['CAT_FILTER_I']))
 		$CAT_FILTER_I= $arOldSetupVars['CAT_FILTER_I'];	
 		
-		if (isset($arOldSetupVars['price_modifier']))
+if (isset($arOldSetupVars['price_modifier']))
 		$price_modifier = $arOldSetupVars['price_modifier'];	
+		
+		
+if (isset($arOldSetupVars['price_modifier']))
+		$price_modifier = $arOldSetupVars['price_modifier'];	
+if (isset($arOldSetupVars['OPTION_ENCODING']))
+		$OPTION_ENCODING = $arOldSetupVars['OPTION_ENCODING'];	
+else  $OPTION_ENCODING="N";
+if (isset($arOldSetupVars['fromfile']))
+		$fromfile = $arOldSetupVars['fromfile'];	
+if (isset($arOldSetupVars['toiblock']))
+		$toiblock= $arOldSetupVars['toiblock'];	
 		
 		
 		
@@ -245,22 +257,107 @@ CAdminFileDialog::ShowScript(
 		</td>
 	</tr>
 	
+
+		
+	
+	</tr>
 		<tr class="heading">
 		<td colspan="2" align="center">
-			<? echo GetMessage("CAT_PRICE_OPTIONS"); ?>
+			<? echo GetMessage("OPTIONS"); ?>
 		</td>
 	</tr>
-		<tr>
+	<tr>
 		<td valign="top" width="40%"><? echo GetMessage("CAT_PRICE_MODIFIER");?>:</td>
 		<td valign="top" width="60%">
 			<input type="text" name="price_modifier" size="40" value="<? echo doubleval($price_modifier); ?>" ><br>
 			<small><?echo GetMessage("CAT_PRICE_MODIFIER_INFO");?></small>
 		</td>
 	</tr>
+	<tr>
+		<td valign="top" width="40%"><? echo GetMessage("OPTION_ENCODING");?>:</td>
+		<td valign="top" width="60%">
+			<select name="OPTION_ENCODING">
+				<option value="N" <?if($OPTION_ENCODING=="N"){?> selected <?}?>><? echo GetMessage("NO");?></option>
+				<option value="WU" <?if($OPTION_ENCODING=="WU"){?> selected <?}?> >windows-1251 -> utf8</option>
+				<option value="UW" <?if($OPTION_ENCODING=="UW"){?> selected <?}?>>utf8 -> windows-1251</option>
+			</select>
+		</td>
+	</tr>
+	
+	</tr>
+		<tr class="heading">
+		<td  align="center" colspan="2" >
+			<? echo GetMessage("PROPERTY_MAP"); ?>
+		</td>
+		</tr>
+					<tr>
+						<td colspan="2" align="center">
+							<div id="associations">
+							<?if (is_array($fromfile)){
+								foreach ($fromfile as $key=>$val){
+								$inn=$key+1;
+							?>
+									<div id="association"><? echo GetMessage("IN_FILE"); ?>: <input type="text" name="fromfile[]" id="from<?=$key?>" size="20" value="<?=$val?>" > <? echo GetMessage("IN_IBLOCK"); ?>: <input type="text" name="toiblock[]" id="to<?=$key?>" size="20" value="<?=$toiblock[$key]?>" ><br/><br/></div>
+							<?
+								}
+							}else{
+							$inn=1;
+							?>
+								<div id="association"><? echo GetMessage("IN_FILE"); ?>: <input type="text" name="fromfile[]" id="from0" size="20" value="" > <? echo GetMessage("IN_IBLOCK"); ?>: <input type="text" name="toiblock[]" id="to0" size="20" value="" ><br/><br/></div>
+							<?}?>
+							</div>
+							
+							<br>
+							<input type="Button" id="add_property_btn" value="<? echo GetMessage("ADD_PROPERTY_MAP");?>" onclick="AddRekvMore(1);"></td>
+						</td>
+						
+					
+					</tr>
+
+	<script>
+
+var inn=<?=$inn?>;
+function AddRekvMore(ind)
+{
+	
+
+
+	
+	var toClone = document.getElementById("association");
+	var clonedNode = toClone.cloneNode(3);
+	var insertPoint = document.getElementById('associations');
+	var NewDiv=insertPoint.appendChild(clonedNode);
+	NewDiv.setAttribute("id", "association"+inn);
+	
+	var inn2=inn-1;
+	var inputT = document.getElementById("from"+inn2);
+	
+	inputT.setAttribute("id", "from"+inn);
+
+	
+	var intu = document.getElementById("to"+inn2);
+	intu.setAttribute("id", "to"+inn);
+	
+	
+	inn++;
+
+
+}
+
+	</script>
+	
+	
+	
 
     <? if ($ACTION != "IMPORT")
     {
         ?>
+	</tr>
+		<tr class="heading">
+		<td colspan="2" align="center">
+			<?echo GetMessage("CAT_PROFILE_NAME");?>
+		</td>
+	</tr>
 	<tr>
 		<td valign="top" width="40%" ><?echo GetMessage("CAT_PROFILE_NAME");?>:</td>
 		<td valign="top" width="60%" >
@@ -311,7 +408,7 @@ if ($STEP < 2)
     <input type="hidden" name="ACT_FILE" value="<?echo htmlspecialcharsbx($_REQUEST["ACT_FILE"]) ?>">
     <input type="hidden" name="ACTION" value="<?echo htmlspecialcharsbx($ACTION) ?>">
 
-    <input type="hidden" name="SETUP_FIELDS_LIST" value="DATA_FILE_NAME, IBLOCK_ID, IMPORT_CATEGORY, ONLY_PRICE, max_execution_time, IMPORT_CATEGORY_SECTION, URL_DATA_FILE2, ID_SECTION, CAT_FILTER_I, price_modifier">
+    <input type="hidden" name="SETUP_FIELDS_LIST" value="DATA_FILE_NAME, IBLOCK_ID, IMPORT_CATEGORY, ONLY_PRICE, max_execution_time, IMPORT_CATEGORY_SECTION, URL_DATA_FILE2, ID_SECTION, CAT_FILTER_I, price_modifier,toiblock,fromfile,OPTION_ENCODING">
 
     <input type="submit" value="<? echo ($ACTION=="IMPORT")?GetMessage("CICML_NEXT_STEP_F")." &gt;&gt;":GetMessage("CET_SAVE"); ?>" name="submit_btn"><?
 }
