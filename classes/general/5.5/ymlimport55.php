@@ -9,6 +9,23 @@ IncludeModuleLangFile($_SERVER['DOCUMENT_ROOT'].'/bitrix/modules/bedrosova.ymlim
 global $USER;
 global $APPLICATION;
 
+//перекодируем в ту кодировку, в которую надо, если надо
+//Почему не отталкиваемся от кодировки сайта?
+//Так было раньше, но по просьбам пользователей теперь мы вынесли перекодировку в настройки
+function yml_iconv($str,$oe="N")
+	{
+		switch ($oe) {
+			case "N":
+				return $str;
+			case "WU":
+				return iconv("windows-1251", "utf-8", $str);
+			case "UW":
+				return iconv("utf-8", "windows-1251", $str);
+			default:
+				return $str;
+			}	
+	}
+
 class CYmlImport
 {
 
@@ -23,6 +40,8 @@ class CYmlImport
     var $FILE_POS=0;
 
     var $fp;
+	
+
 
     function file_get_contents($filename)
     {
@@ -66,7 +85,7 @@ class CYmlImport
 
 
     // а это жирная функция как раз все делает
-    function ImportYML ($DATA_FILE_NAME, $IBLOCK_ID, $IMPORT_CATEGORY, $ONLY_PRICE, $max_execution_time, $CUR_FILE_POS,$IMPORT_CATEGORY_SECTION, $URL_DATA_FILE2, $ID_SECTION, $CAT_FILTER_I, $price_modifier)
+    function ImportYML ($DATA_FILE_NAME, $IBLOCK_ID, $IMPORT_CATEGORY, $ONLY_PRICE, $max_execution_time, $CUR_FILE_POS,$IMPORT_CATEGORY_SECTION, $URL_DATA_FILE2, $ID_SECTION, $CAT_FILTER_I, $price_modifier,$OPTION_ENCODING)
     {
 
         if (!isset($USER) || !(($USER instanceof CUser) && ('CUser' == get_class($USER))))
@@ -190,8 +209,8 @@ class CYmlImport
 					}
 				
 				
-				
-                $CATEGORIA_NAME=iconv('utf-8',SITE_CHARSET,$Categoria);
+			
+                $CATEGORIA_NAME=yml_iconv($Categoria,$OPTION_ENCODING);
 
 
                 //Ищем, существует ли такая категория на сайте
@@ -343,7 +362,7 @@ class CYmlImport
                    // $PRODUCT_NAME_UNCODED = $xProductNode->model;
 					//if (!isset($PRODUCT_NAME_UNCODED)) $PRODUCT_NAME_UNCODED=$xProductNode->name;
 
-					$PRODUCT_NAME=iconv('utf-8',SITE_CHARSET, trim($PRODUCT_NAME_UNCODED));
+					$PRODUCT_NAME=yml_iconv(trim($PRODUCT_NAME_UNCODED),$OPTION_ENCODING);
 					$det_text=$xProductNode->description;
 					
 					$is_import_by_filter=false;
@@ -431,7 +450,7 @@ class CYmlImport
 					
 
 //$description=iconv('utf-8',SITE_CHARSET,(string)$xProductNode->description);
-$description=$xProductNode->description;
+$description=yml_iconv((string)$xProductNode->description,$OPTION_ENCODING);
 
 					
                     $arLoadProductArray = Array(
@@ -443,8 +462,8 @@ $description=$xProductNode->description;
                         "ACTIVE"=>$xProductNode['available']=='true'?'Y':'N',
                         "DETAIL_PICTURE" => CFile::MakeFileArray($xProductNode->picture[0]),
 						"PREVIEW_PICTURE" => CFile::MakeFileArray($xProductNode->picture[0]),
-                        //"DETAIL_TEXT"=>iconv('utf-8',SITE_CHARSET,$xProductNode->description),
-                        "DETAIL_TEXT"=>$xProductNode->description,
+                    
+                        "DETAIL_TEXT"=>$description,
                         "DETAIL_TEXT_TYPE"=>'html',
                         // получаем код товара
                       // "CODE" => CUtil::translit(($vendor?$vendor:$PRODUCT_NAME)." ".$articul, 'ru', array()),
@@ -460,8 +479,8 @@ $description=$xProductNode->description;
                         "ACTIVE"=>$xProductNode['available']=='true'?'Y':'N',
                         "DETAIL_PICTURE" => CFile::MakeFileArray($xProductNode->picture[0]),
 						"PREVIEW_PICTURE" => CFile::MakeFileArray($xProductNode->picture[0]),
-                        //"DETAIL_TEXT"=>iconv('utf-8',SITE_CHARSET,$xProductNode->description,false),
-                        "DETAIL_TEXT"=>$xProductNode->description,false,
+        
+                        "DETAIL_TEXT"=>$description,
 						//"IBLOCK_SECTION"	=>	$ResCatArr["".$PRODUCT_XML_CAT_ID.""],
                     );
 
@@ -620,7 +639,7 @@ $description=$xProductNode->description;
 								foreach($xOfferListNode->param as $param)
 								{
 									//print $param['name']."<br>";
-									$PROPERTY_VALUE['n'.$count]=array('VALUE'=>iconv('utf-8',SITE_CHARSET,$param),'DESCRIPTION'=>iconv('utf-8',SITE_CHARSET,$param['name']));
+									$PROPERTY_VALUE['n'.$count]=array('VALUE'=>yml_iconv($param,$OPTION_ENCODING),'DESCRIPTION'=>yml_iconv($param['name'],$OPTION_ENCODING));
 									$count++;
 
 								}
@@ -630,7 +649,7 @@ $description=$xProductNode->description;
 								foreach($xProductNode->param as $param){
 
 	//                                print $param['name']."<br>";
-									$PROPERTY_VALUE['n'.$count]=array('VALUE'=>iconv('utf-8',SITE_CHARSET,$param),'DESCRIPTION'=>iconv('utf-8',SITE_CHARSET,$param['name']));
+									$PROPERTY_VALUE['n'.$count]=array('VALUE'=>yml_iconv($param,$OPTION_ENCODING),'DESCRIPTION'=>yml_iconv($param['name'],$OPTION_ENCODING));
 									$count++;
 
 								}

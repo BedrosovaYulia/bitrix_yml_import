@@ -86,7 +86,7 @@ $MESS ['IBLOCK_ADM_IMP_FIELDS_SOOT'] = "Укажите соответсвие между параметрами в 
 $MESS ['OPTIONS'] = "Опции";
 $MESS ['OPTION_ENCODING'] = "Перекодировать данные";
 $MESS ['NO'] = "Нет";
-$MESS ['PROPERTY_MAP'] = "Карта свойств";
+$MESS ['PROPERTY_MAP'] = "Карта свойств (по умолчанию грузятся в CML2_ATTRIBUTES)";
 
 $MESS ['ADD_PROPERTY_MAP'] = "Добавить";
 
