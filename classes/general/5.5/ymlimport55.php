@@ -54,7 +54,7 @@ class CYmlImport
         if (!is_object($xml->shop))
         {
             //не могу создать объект
-            $file_content = iconv("UTF-8", "Windows-1251", $file_content);
+            $file_content = iconv("windows-1251", "utf-8", $file_content);
 
             // кодировка произведена
             // еще разик
