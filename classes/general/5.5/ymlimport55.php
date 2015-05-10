@@ -386,7 +386,7 @@ class CYmlImport
 					
                     
 
-                    //$fp = @fopen($_SERVER["DOCUMENT_ROOT"]."/log.txt", "a");
+                
 
                     $PRODUCT_XML_CAT_ID='yml_'.$xProductNode->categoryId;
 
@@ -404,32 +404,10 @@ class CYmlImport
 					if ($is_filtreded){
 					
 					
-					//Бедросова 9.09.2014 - вот этот мод по свойствам должен выйти в основной релиз
-					
+						$yml_tags_array=array("vendor","vendorCode","country_of_origin","sales_notes","manufacturer_warranty","barcode");
 						$params=$xProductNode->param;
-						$strana="";
-						$material="";
-						$size="";
-						$vendor="";
-						$vendor=$xProductNode->vendor;
-						$articul=$xProductNode->vendorCode;
-						$strana="";
-						$strana=$xProductNode->country_of_origin;
-						
-						foreach($xProductNode->param as $param){
-							
-							$atr=array();
-							$atr=$param[0]->attributes();
-							//print $atr['name'];
-							
-							if ($atr['name']=='Цвет') $color=''.$param;
-							if ($atr['name']=='Материал') $material=''.$param;
-							if ($atr['name']=='Размер') $size=''.$param;
-							//if ($atr['name']=='vendor') $vendor=$param;
-							//if ($atr['name']=='vendor') $vendor=$param;
-						
-						}
-						//die();
+					
+					
 						$more_photo=array();
 						$n=0;
 						$p=0;
@@ -446,11 +424,8 @@ class CYmlImport
 						
 
 						}
-					//Бедросова конец 9.09.2014 - вот этот мод должен выйти в основной релиз
 					
-
-//$description=iconv('utf-8',SITE_CHARSET,(string)$xProductNode->description);
-$description=yml_iconv((string)$xProductNode->description,$OPTION_ENCODING);
+					$description=yml_iconv((string)$xProductNode->description,$OPTION_ENCODING);
 
 					
                     $arLoadProductArray = Array(
@@ -513,12 +488,7 @@ $description=yml_iconv((string)$xProductNode->description,$OPTION_ENCODING);
                               //fwrite($fp, "code changed to xmlid ".$PRODUCT_XML_ID." ".$PRODUCT_NAME."\n");
                             }
 							
-						
-							CIBlockElement::SetPropertyValueCode($PRODUCT_ID, "YML_IMPORT_BRAND",$vendor);
-							CIBlockElement::SetPropertyValueCode($PRODUCT_ID, "MAKER_COUNTRY",$strana);
-							CIBlockElement::SetPropertyValueCode($PRODUCT_ID, "CML2_ARTICLE",$articul);
-
-							
+								
 							$va_props = CIBlockElement::GetProperty($IBLOCK_ID, $PRODUCT_ID, array(), Array("CODE" => "MORE_PHOTO"));
 								while($pic_props = $va_props->Fetch())
 								{
@@ -531,14 +501,8 @@ $description=yml_iconv((string)$xProductNode->description,$OPTION_ENCODING);
 								}
 								
 								
-						 CIBlockElement::SetPropertyValueCode($PRODUCT_ID, "MORE_PHOTO", $more_photo);
+							CIBlockElement::SetPropertyValueCode($PRODUCT_ID, "MORE_PHOTO", $more_photo);
 							  
-							  
-
-
-							
-							//конец Бедросова 09.09.2014 мод по свойствам - не забыть включить в релиз
-
                         }
 						else{
 						
@@ -569,9 +533,6 @@ $description=yml_iconv((string)$xProductNode->description,$OPTION_ENCODING);
                             }
 							
 							
-							CIBlockElement::SetPropertyValueCode($PRODUCT_ID, "YML_IMPORT_BRAND",$vendor);
-							CIBlockElement::SetPropertyValueCode($PRODUCT_ID, "MAKER_COUNTRY",$strana);
-							CIBlockElement::SetPropertyValueCode($PRODUCT_ID, "CML2_ARTICLE",$articul);
 							
 							$va_props = CIBlockElement::GetProperty($IBLOCK_ID, $PRODUCT_ID, array(), Array("CODE" => "MORE_PHOTO"));
 								while($pic_props = $va_props->Fetch())
@@ -585,8 +546,8 @@ $description=yml_iconv((string)$xProductNode->description,$OPTION_ENCODING);
 								}
 								
 								
-						 CIBlockElement::SetPropertyValueCode($PRODUCT_ID, "MORE_PHOTO", $more_photo);
-							//конец Бедросова 09.09.2014 мод по свойствам - не забыть включить в релиз
+							CIBlockElement::SetPropertyValueCode($PRODUCT_ID, "MORE_PHOTO", $more_photo);
+							
 
                         }
 						else{
@@ -599,9 +560,7 @@ $description=yml_iconv((string)$xProductNode->description,$OPTION_ENCODING);
                     if ($flag_ok)
                     {
 
-                        
-						
-						
+
 						$arFieldsProduct = array
                         (
                             "ID" => $PRODUCT_ID,
@@ -623,15 +582,15 @@ $description=yml_iconv((string)$xProductNode->description,$OPTION_ENCODING);
                         //Обновляем базовую цену для товара
                         $price_ok=CPrice::SetBasePrice($PRODUCT_ID,$ProductPrice,"RUB");
 
-                      // if ($price_ok) print "Цена успешно обновлена<br>";
-					   
-					   
-					   
+                    
+//***********************************************************************************************************************************************************					   
+//                                                                  Сохранение свойств товара					   
+//***********************************************************************************************************************************************************					   
 
                         if ($ONLY_PRICE!='Y')
                         {
 
-
+							//После того, как основная информация по товару записана, сохраняем свойства
                             $PROPERTY_VALUE=array();
                             $count=0;
                             if (isset ($xOfferListNode))
@@ -654,12 +613,17 @@ $description=yml_iconv((string)$xProductNode->description,$OPTION_ENCODING);
 
 								}
 							}
+							
+							foreach($yml_tags_array as $val){
+							
+								$PROPERTY_VALUE['n'.$count]=array('VALUE'=>yml_iconv($xProductNode->$val,$OPTION_ENCODING),'DESCRIPTION'=>$val);
+								$count++;
+							
+							}
 
                             $ELEMENT_ID = $PRODUCT_ID;  // код элемента
                             $PROPERTY_CODE = "CML2_ATTRIBUTES";  // код свойства
-                            //$PROPERTY_VALUE = $prop_array;  // значение свойства
-
-                            // Установим новое значение для данного свойства данного элемента
+           
                             CIBlockElement::SetPropertyValuesEx($ELEMENT_ID, $IBLOCK_ID, array($PROPERTY_CODE=>$PROPERTY_VALUE));
 
                         }
@@ -690,7 +654,7 @@ $description=yml_iconv((string)$xProductNode->description,$OPTION_ENCODING);
             }
         }
 		
-		//die();
+		
 
         // не успели закончить до таймера
         if (!$bAllLinesLoaded)
